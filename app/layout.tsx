@@ -19,6 +19,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Techboy | Visuals & Motion — Lagos, Nigeria",
   description: "Seun, known as Techboy — a Lagos-based visuals and motion specialist. Cinematic videography, aerial drone work, photography, and motion graphics.",
+  icons: {
+    icon: "/logo.svg",
+  },
 };
 
 export default function RootLayout({

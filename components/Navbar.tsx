@@ -54,7 +54,7 @@ export default function Navbar() {
                         <img
                             src="/logo.svg"
                             alt="Techboy"
-                            className="h-8 w-auto transition-opacity group-hover:opacity-80"
+                            className="h-12 w-auto transition-opacity group-hover:opacity-80"
                         />
                     </Link>
 
@@ -84,7 +84,7 @@ export default function Navbar() {
             >
                 {/* Logo in mobile menu */}
                 <div className="absolute top-6 left-8">
-                    <img src="/logo.svg" alt="Techboy" className="h-8 w-auto" />
+                    <img src="/logo.svg" alt="Techboy" className="h-12 w-auto" />
                 </div>
 
                 <div className="flex flex-col items-center gap-8 text-2xl font-bold uppercase tracking-widest mt-16">

@@ -54,7 +54,7 @@ export default async function AdminLayout({
                         <img
                             src="/logo.svg"
                             alt="Techboy"
-                            className="h-7 w-auto opacity-80 group-hover:opacity-100 transition-opacity"
+                            className="h-9 w-auto opacity-80 group-hover:opacity-100 transition-opacity"
                         />
                         <div className="leading-none">
                             <span className="text-[9px] font-bold uppercase tracking-[0.25em] text-white/30 block">

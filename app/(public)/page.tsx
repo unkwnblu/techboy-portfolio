@@ -214,23 +214,34 @@ export default function Home() {
               const mainMedia = project.media?.[0];
               const isVideoInput = mainMedia?.media_type === 'video';
               const mediaUrl = mainMedia?.file_url || "";
-              const thumbUrl = mediaUrl;
+
+              const media = isVideoInput ? (
+                <video
+                  src={mediaUrl}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  suppressHydrationWarning
+                  className="absolute inset-0 w-full h-full object-contain"
+                />
+              ) : (
+                <img
+                  src={mediaUrl}
+                  alt={project.title}
+                  className="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-1000"
+                />
+              );
 
               if (index === 0) {
-                // Tile 1: Large Span
                 return (
                   <Link
                     key={project.id} href={`/portfolio/${project.slug}`}
-                    className="md:col-span-2 rounded-2xl overflow-hidden relative group cursor-none block"
-                    onMouseEnter={() => { setCursorText("PLAY"); setCursorVariant("project"); }}
+                    className="md:col-span-2 rounded-2xl overflow-hidden relative group cursor-none block bg-black"
+                    onMouseEnter={() => { setCursorText(isVideoInput ? "PLAY" : "VIEW"); setCursorVariant("project"); }}
                     onMouseLeave={() => { setCursorText(""); setCursorVariant("default"); }}
                   >
-                    <img src={thumbUrl} className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 group-hover:opacity-0" alt={project.title} />
-                    {isVideoInput ? (
-                      <video src={mediaUrl} suppressHydrationWarning muted loop playsInline className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-700 group-hover:opacity-100" onMouseEnter={e => e.currentTarget.play()} onMouseLeave={e => e.currentTarget.pause()} />
-                    ) : (
-                      <img src={thumbUrl} className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-700 group-hover:opacity-100 transform scale-105" alt={project.title} />
-                    )}
+                    {media}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-8 z-10 pointer-events-none">
                       <h3 className="text-3xl font-bold uppercase tracking-wide">{project.title}</h3>
                       <p className="text-gray-400 capitalize">{project.category?.replace('_', ' ')}</p>
@@ -240,15 +251,14 @@ export default function Home() {
               }
 
               if (index === 1) {
-                // Tile 2: Tall Vertical
                 return (
                   <Link
                     key={project.id} href={`/portfolio/${project.slug}`}
-                    className="md:row-span-2 rounded-2xl overflow-hidden relative group cursor-none block"
-                    onMouseEnter={() => { setCursorText("VIEW"); setCursorVariant("project"); }}
+                    className="md:row-span-2 rounded-2xl overflow-hidden relative group cursor-none block bg-black"
+                    onMouseEnter={() => { setCursorText(isVideoInput ? "PLAY" : "VIEW"); setCursorVariant("project"); }}
                     onMouseLeave={() => { setCursorText(""); setCursorVariant("default"); }}
                   >
-                    <img src={thumbUrl} className="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-1000" alt={project.title} />
+                    {media}
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col items-center justify-center p-8 z-10 pointer-events-none backdrop-blur-sm">
                       <h3 className="text-2xl font-bold uppercase tracking-wide text-center">{project.title}</h3>
                       <p className="text-sm font-medium uppercase tracking-widest text-gray-300 mt-2">{project.category?.replace('_', ' ')}</p>
@@ -258,20 +268,14 @@ export default function Home() {
               }
 
               if (index === 2) {
-                // Tile 3: Square
                 return (
                   <Link
                     key={project.id} href={`/portfolio/${project.slug}`}
-                    className="rounded-2xl overflow-hidden relative group cursor-none block"
-                    onMouseEnter={() => { setCursorText("PLAY"); setCursorVariant("project"); }}
+                    className="rounded-2xl overflow-hidden relative group cursor-none block bg-black"
+                    onMouseEnter={() => { setCursorText(isVideoInput ? "PLAY" : "VIEW"); setCursorVariant("project"); }}
                     onMouseLeave={() => { setCursorText(""); setCursorVariant("default"); }}
                   >
-                    <img src={thumbUrl} className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 group-hover:opacity-0" alt={project.title} />
-                    {isVideoInput ? (
-                      <video src={mediaUrl} suppressHydrationWarning muted loop playsInline className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-700 group-hover:opacity-100" onMouseEnter={e => e.currentTarget.play()} onMouseLeave={e => e.currentTarget.pause()} />
-                    ) : (
-                      <img src={thumbUrl} className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-700 group-hover:opacity-100 transform scale-105" alt={project.title} />
-                    )}
+                    {media}
                     <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none">
                       <p className="font-bold uppercase tracking-widest text-sm">{project.title}</p>
                     </div>
@@ -279,15 +283,14 @@ export default function Home() {
                 );
               }
 
-              // Default standard tile for index 3+
               return (
                 <Link
                   key={project.id} href={`/portfolio/${project.slug}`}
                   className="rounded-2xl overflow-hidden relative group cursor-none block bg-black"
-                  onMouseEnter={() => { setCursorText("VIEW"); setCursorVariant("project"); }}
+                  onMouseEnter={() => { setCursorText(isVideoInput ? "PLAY" : "VIEW"); setCursorVariant("project"); }}
                   onMouseLeave={() => { setCursorText(""); setCursorVariant("default"); }}
                 >
-                  <img src={thumbUrl} className="absolute inset-0 w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000" alt={project.title} />
+                  {media}
                   <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none">
                     <p className="font-bold uppercase tracking-widest text-sm">{project.title}</p>
                   </div>
