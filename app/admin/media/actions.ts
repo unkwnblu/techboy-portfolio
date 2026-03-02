@@ -100,3 +100,36 @@ export async function uploadProjectAndMedia(formData: FormData) {
 
     return { success: true };
 }
+
+export async function updateProject(formData: FormData) {
+    const id = formData.get("id") as string;
+    const title = formData.get("title") as string;
+    const client = formData.get("client") as string;
+    const category = formData.get("category") as 'photo' | 'video' | 'drone' | 'edit';
+    const description = formData.get("description") as string;
+    const is_featured = formData.get("is_featured") === "on";
+
+    const supabase = await createClient();
+
+    const { error } = await supabase
+        .from("projects")
+        .update({
+            title,
+            client,
+            category,
+            description,
+            is_featured,
+        })
+        .eq("id", id);
+
+    if (error) throw new Error(error.message);
+
+    revalidatePath("/admin/media");
+    revalidatePath(`/admin/media/${id}`);
+    revalidatePath("/portfolio");
+    revalidatePath("/");
+
+    // Redirect must be imported and called directly or returned, depending on Nextjs usage.
+    // For simplicity with server actions as forms, we'll throw if error, letting Nextjs error boundaries catch it, 
+    // or return a redirect. But wait, `redirect` triggers an error that Next.js catches for navigation.
+}

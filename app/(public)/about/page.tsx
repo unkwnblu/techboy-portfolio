@@ -1,11 +1,15 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import { useCursor } from "@/components/CursorContext";
+import { ChevronDown } from "lucide-react";
 
 export default function AboutPage() {
     const container = useRef<HTMLDivElement>(null);
+    const { setCursorVariant } = useCursor();
+    const [openIndex, setOpenIndex] = useState<number | null>(0);
 
     useGSAP(() => {
         gsap.fromTo(
@@ -39,26 +43,39 @@ export default function AboutPage() {
                         With years of experience blending technical precision with artistic intuition, every project is approached not just as a job, but as an opportunity to craft a cinematic masterpiece. From freezing split-second moments in time to sweeping aerial vistas, my goal is to elevate your story above the noise.
                     </p>
 
-                    <div className="pt-8 border-t border-gray-800">
+                    <div
+                        className="pt-8 border-t border-gray-800"
+                        onMouseEnter={() => setCursorVariant("project")}
+                        onMouseLeave={() => setCursorVariant("default")}
+                    >
                         <h3 className="text-xl font-semibold uppercase tracking-widest mb-6 border-l-2 border-white pl-4">Gear Arsenal</h3>
-                        <ul className="space-y-4 text-gray-400">
-                            <li className="flex justify-between border-b border-gray-900 pb-2">
-                                <span className="font-medium text-gray-200">Main Camera</span>
-                                <span>RED Komodo-X / Sony FX6</span>
-                            </li>
-                            <li className="flex justify-between border-b border-gray-900 pb-2">
-                                <span className="font-medium text-gray-200">Drone Systems</span>
-                                <span>DJI Inspire 3 / Custom 5" FPV</span>
-                            </li>
-                            <li className="flex justify-between border-b border-gray-900 pb-2">
-                                <span className="font-medium text-gray-200">Lenses</span>
-                                <span>Atlas Orion Anamorphic / Sigma Cine Primes</span>
-                            </li>
-                            <li className="flex justify-between pt-2">
-                                <span className="font-medium text-gray-200">Post</span>
-                                <span>DaVinci Resolve Studio / Premiere Pro</span>
-                            </li>
-                        </ul>
+                        <div className="space-y-2">
+                            {[
+                                { category: "Main Camera", items: "RED Komodo-X / Sony FX6 / Alexa Mini LF" },
+                                { category: "Drone Systems", items: "DJI Inspire 3 / Custom 5\" FPV / Mavic 3 Cine" },
+                                { category: "Lenses", items: "Atlas Orion Anamorphic / Sigma Cine Primes / Cooke Panchro" },
+                                { category: "Post & Color", items: "DaVinci Resolve Studio / Premiere Pro / Flanders Scientific" },
+                            ].map((gear, idx) => (
+                                <div key={idx} className="border-b border-gray-900 overflow-hidden">
+                                    <button
+                                        onClick={() => setOpenIndex(openIndex === idx ? null : idx)}
+                                        className="w-full py-4 flex items-center justify-between text-left group"
+                                    >
+                                        <span className="font-bold text-gray-200 uppercase tracking-wider group-hover:text-white transition-colors">{gear.category}</span>
+                                        <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-500 ${openIndex === idx ? 'rotate-180' : ''}`} />
+                                    </button>
+                                    <div
+                                        className="transition-all duration-500 ease-in-out"
+                                        style={{
+                                            maxHeight: openIndex === idx ? '200px' : '0px',
+                                            opacity: openIndex === idx ? 1 : 0
+                                        }}
+                                    >
+                                        <p className="pb-4 text-gray-400 font-light truncate">{gear.items}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>

@@ -68,9 +68,9 @@ export default async function MediaPage() {
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         <div className="flex items-center justify-end gap-2">
-                                            <button title="Edit Project" disabled className="p-2 text-gray-400 hover:text-white transition-colors opacity-50 cursor-not-allowed">
+                                            <Link href={`/admin/media/${project.id}`} title="Edit Project" className="p-2 text-gray-400 hover:text-white transition-colors">
                                                 <Edit2 className="w-4 h-4" />
-                                            </button>
+                                            </Link>
                                             <form action={deleteProject}>
                                                 <input type="hidden" name="id" value={project.id} />
                                                 <button type="submit" title="Delete Project" className="p-2 text-gray-400 hover:text-red-500 transition-colors">
