@@ -22,7 +22,7 @@ export default function AboutPage() {
     return (
         <div ref={container} className="min-h-screen pt-32 pb-20 px-8 max-w-7xl mx-auto flex flex-col items-center">
             <h1 className="about-fade w-full text-5xl md:text-7xl font-bold uppercase tracking-tighter mb-16 text-center">
-                The Visionary
+                Techboy
             </h1>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">

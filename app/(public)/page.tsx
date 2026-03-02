@@ -2,15 +2,54 @@
 
 import { useRef, useEffect, useState } from "react";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
-import { ArrowDown } from "lucide-react";
+import { ArrowDown, Loader2 } from "lucide-react";
 import { useCursor } from "@/components/CursorContext";
+import { createClient } from "@/lib/supabase/client";
+import { Database } from "@/types/supabase";
+import Link from "next/link";
+
+gsap.registerPlugin(ScrollTrigger);
+
+type ProjectWithMedia = Database['public']['Tables']['projects']['Row'] & {
+  media: Database['public']['Tables']['media']['Row'][];
+};
 
 export default function Home() {
   const container = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const manifestoRef = useRef<HTMLDivElement>(null);
   const { setCursorText, setCursorVariant } = useCursor();
+
+  const [featuredProjects, setFeaturedProjects] = useState<ProjectWithMedia[]>([]);
+  const [loadingFeatured, setLoadingFeatured] = useState(true);
+
+  useEffect(() => {
+    async function fetchFeatured() {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from('projects')
+        .select(`
+          *,
+          media (*)
+        `)
+        .eq('is_featured', true)
+        .order('created_at', { ascending: false })
+        .limit(4);
+
+      if (!error && data) {
+        // Sort media for each project
+        const processedData = data.map(project => ({
+          ...project,
+          media: project.media?.sort((a: any, b: any) => a.sort_order - b.sort_order) || []
+        }));
+        setFeaturedProjects(processedData);
+      }
+      setLoadingFeatured(false);
+    }
+    fetchFeatured();
+  }, []);
 
   useGSAP(() => {
     // --- Hero Animations ---
@@ -81,11 +120,12 @@ export default function Home() {
           <div className="absolute inset-0 bg-black/40 z-10" />
           <video
             ref={videoRef}
-            src="https://cdn.pixabay.com/video/2023/10/22/186004-876939634_large.mp4"
+            src="https://joy1.videvo.net/videvo_files/video/free/2016-01/large_watermarked/160111_19_LosAngeles_Night_01_1080p_preview.mp4"
             autoPlay
             loop
             muted
             playsInline
+            suppressHydrationWarning
             className="w-full h-[120%] object-cover object-center absolute -top-[10%] opacity-80"
           />
         </div>
@@ -93,15 +133,17 @@ export default function Home() {
         {/* Content */}
         <div className="relative z-20 text-center px-4 max-w-7xl mx-auto flex flex-col items-center w-full mt-20">
           <div className="overflow-hidden w-full flex justify-center">
-            <h1 className="hero-text text-[15vw] leading-[0.8] font-bold tracking-tighter uppercase text-white pointer-events-none mix-blend-difference">
-              Cinematic
-            </h1>
-          </div>
-          <div className="overflow-hidden w-full flex justify-center">
             <h1 className="hero-text text-[15vw] leading-[0.8] font-bold tracking-tighter uppercase text-transparent [-webkit-text-stroke:2px_rgba(255,255,255,0.8)] pointer-events-none">
-              Vision
+              SHOT BY
             </h1>
           </div>
+
+          <div className="overflow-hidden w-full flex justify-center">
+            <h1 className="hero-text text-[15vw] leading-[0.8] font-bold tracking-tighter uppercase text-white pointer-events-none mix-blend-difference">
+              Techboy
+            </h1>
+          </div>
+
         </div>
 
         {/* Custom Magnetic Scroll Indicator */}
@@ -163,80 +205,100 @@ export default function Home() {
         <h2 className="text-4xl md:text-6xl font-bold uppercase tracking-tighter mb-16 text-center">Selected Works</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 auto-rows-[300px] md:auto-rows-[400px]">
-          {/* Tile 1: Large Span */}
-          <div
-            className="md:col-span-2 rounded-2xl overflow-hidden relative group cursor-none"
-            onMouseEnter={() => {
-              setCursorText("PLAY");
-              setCursorVariant("project");
-            }}
-            onMouseLeave={() => {
-              setCursorText("");
-              setCursorVariant("default");
-            }}
-          >
-            <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=1200&q=80" className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 group-hover:opacity-0" alt="Work 1" />
-            <video src="https://cdn.pixabay.com/video/2021/08/04/83818-584749321_large.mp4" muted loop playsInline className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-700 group-hover:opacity-100" onMouseEnter={e => e.currentTarget.play()} onMouseLeave={e => e.currentTarget.pause()} />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-8 z-10 pointer-events-none">
-              <h3 className="text-3xl font-bold uppercase tracking-wide">Neon Nights</h3>
-              <p className="text-gray-400">Commercial / Nike</p>
+          {loadingFeatured ? (
+            <div className="col-span-full flex items-center justify-center h-full min-h-[400px]">
+              <Loader2 className="w-8 h-8 animate-spin text-gray-500" />
             </div>
-          </div>
+          ) : featuredProjects.length > 0 ? (
+            featuredProjects.map((project, index) => {
+              const mainMedia = project.media?.[0];
+              const isVideoInput = mainMedia?.media_type === 'video';
+              const mediaUrl = mainMedia?.file_url || "";
+              const thumbUrl = mediaUrl;
 
-          {/* Tile 2: Tall Vertical */}
-          <div
-            className="md:row-span-2 rounded-2xl overflow-hidden relative group cursor-none"
-            onMouseEnter={() => {
-              setCursorText("VIEW");
-              setCursorVariant("project");
-            }}
-            onMouseLeave={() => {
-              setCursorText("");
-              setCursorVariant("default");
-            }}
-          >
-            <img src="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=800&q=80" className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-1000" alt="Work 2" />
-            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col items-center justify-center p-8 z-10 pointer-events-none backdrop-blur-sm">
-              <h3 className="text-2xl font-bold uppercase tracking-wide text-center">Urban Solitude</h3>
-            </div>
-          </div>
+              if (index === 0) {
+                // Tile 1: Large Span
+                return (
+                  <Link
+                    key={project.id} href={`/portfolio/${project.slug}`}
+                    className="md:col-span-2 rounded-2xl overflow-hidden relative group cursor-none block"
+                    onMouseEnter={() => { setCursorText("PLAY"); setCursorVariant("project"); }}
+                    onMouseLeave={() => { setCursorText(""); setCursorVariant("default"); }}
+                  >
+                    <img src={thumbUrl} className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 group-hover:opacity-0" alt={project.title} />
+                    {isVideoInput ? (
+                      <video src={mediaUrl} suppressHydrationWarning muted loop playsInline className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-700 group-hover:opacity-100" onMouseEnter={e => e.currentTarget.play()} onMouseLeave={e => e.currentTarget.pause()} />
+                    ) : (
+                      <img src={thumbUrl} className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-700 group-hover:opacity-100 transform scale-105" alt={project.title} />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-8 z-10 pointer-events-none">
+                      <h3 className="text-3xl font-bold uppercase tracking-wide">{project.title}</h3>
+                      <p className="text-gray-400 capitalize">{project.category?.replace('_', ' ')}</p>
+                    </div>
+                  </Link>
+                );
+              }
 
-          {/* Tile 3: Square */}
-          <div
-            className="rounded-2xl overflow-hidden relative group cursor-none"
-            onMouseEnter={() => {
-              setCursorText("PLAY");
-              setCursorVariant("project");
-            }}
-            onMouseLeave={() => {
-              setCursorText("");
-              setCursorVariant("default");
-            }}
-          >
-            <img src="https://images.unsplash.com/photo-1589851610421-4f11550c60ba?w=800&q=80" className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 group-hover:opacity-0" alt="Work 3" />
-            <video src="https://cdn.pixabay.com/video/2019/11/04/28745-373377759_large.mp4" muted loop playsInline className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-700 group-hover:opacity-100" onMouseEnter={e => e.currentTarget.play()} onMouseLeave={e => e.currentTarget.pause()} />
-            <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none">
-              <p className="font-bold uppercase tracking-widest text-sm">Aerial Reel</p>
-            </div>
-          </div>
+              if (index === 1) {
+                // Tile 2: Tall Vertical
+                return (
+                  <Link
+                    key={project.id} href={`/portfolio/${project.slug}`}
+                    className="md:row-span-2 rounded-2xl overflow-hidden relative group cursor-none block"
+                    onMouseEnter={() => { setCursorText("VIEW"); setCursorVariant("project"); }}
+                    onMouseLeave={() => { setCursorText(""); setCursorVariant("default"); }}
+                  >
+                    <img src={thumbUrl} className="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-1000" alt={project.title} />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col items-center justify-center p-8 z-10 pointer-events-none backdrop-blur-sm">
+                      <h3 className="text-2xl font-bold uppercase tracking-wide text-center">{project.title}</h3>
+                      <p className="text-sm font-medium uppercase tracking-widest text-gray-300 mt-2">{project.category?.replace('_', ' ')}</p>
+                    </div>
+                  </Link>
+                );
+              }
 
-          {/* Tile 4: Square */}
-          <div
-            className="rounded-2xl overflow-hidden relative group cursor-none"
-            onMouseEnter={() => {
-              setCursorText("VIEW");
-              setCursorVariant("project");
-            }}
-            onMouseLeave={() => {
-              setCursorText("");
-              setCursorVariant("default");
-            }}
-          >
-            <img src="https://images.unsplash.com/photo-1616423640778-28d1b53229bd?w=800&q=80" className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000" alt="Work 4" />
-            <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none">
-              <p className="font-bold uppercase tracking-widest text-sm">The Grade</p>
+              if (index === 2) {
+                // Tile 3: Square
+                return (
+                  <Link
+                    key={project.id} href={`/portfolio/${project.slug}`}
+                    className="rounded-2xl overflow-hidden relative group cursor-none block"
+                    onMouseEnter={() => { setCursorText("PLAY"); setCursorVariant("project"); }}
+                    onMouseLeave={() => { setCursorText(""); setCursorVariant("default"); }}
+                  >
+                    <img src={thumbUrl} className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 group-hover:opacity-0" alt={project.title} />
+                    {isVideoInput ? (
+                      <video src={mediaUrl} suppressHydrationWarning muted loop playsInline className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-700 group-hover:opacity-100" onMouseEnter={e => e.currentTarget.play()} onMouseLeave={e => e.currentTarget.pause()} />
+                    ) : (
+                      <img src={thumbUrl} className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-700 group-hover:opacity-100 transform scale-105" alt={project.title} />
+                    )}
+                    <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none">
+                      <p className="font-bold uppercase tracking-widest text-sm">{project.title}</p>
+                    </div>
+                  </Link>
+                );
+              }
+
+              // Default standard tile for index 3+
+              return (
+                <Link
+                  key={project.id} href={`/portfolio/${project.slug}`}
+                  className="rounded-2xl overflow-hidden relative group cursor-none block bg-black"
+                  onMouseEnter={() => { setCursorText("VIEW"); setCursorVariant("project"); }}
+                  onMouseLeave={() => { setCursorText(""); setCursorVariant("default"); }}
+                >
+                  <img src={thumbUrl} className="absolute inset-0 w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000" alt={project.title} />
+                  <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none">
+                    <p className="font-bold uppercase tracking-widest text-sm">{project.title}</p>
+                  </div>
+                </Link>
+              );
+            })
+          ) : (
+            <div className="col-span-full flex items-center justify-center h-[400px]">
+              <p className="text-gray-500 font-medium tracking-widest uppercase text-sm">NO FEATURED WORKS YET.</p>
             </div>
-          </div>
+          )}
         </div>
       </section>
 
@@ -278,7 +340,7 @@ export default function Home() {
 
         <footer className="relative z-10 w-full max-w-7xl mx-auto px-8 flex flex-col md:flex-row items-center justify-between gap-8 pt-16 border-t border-white/10 mt-16">
           <div className="flex items-center gap-4">
-            <span className="text-xl font-bold tracking-tighter uppercase border border-white p-2">CRTV</span>
+            <span className="text-xl font-bold tracking-tighter uppercase border border-white p-2">Techboy</span>
             <p className="text-xs text-gray-500 uppercase tracking-widest font-medium">© {new Date().getFullYear()} All Rights Reserved.</p>
           </div>
 

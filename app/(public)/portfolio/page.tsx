@@ -8,6 +8,7 @@ import { useGSAP } from "@gsap/react";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useCursor } from "@/components/CursorContext";
+import Link from "next/link";
 
 type Project = Database['public']['Tables']['projects']['Row'] & {
     media: Database['public']['Tables']['media']['Row'][];
@@ -91,9 +92,7 @@ export default function PortfolioPage() {
                     {filteredProjects.map((project) => {
                         const coverMedia = project.media?.[0]; // Assume first media is cover
                         return (
-                            <div
-                                key={project.id}
-                                className="portfolio-item group relative rounded-xl overflow-hidden break-inside-avoid shadow-2xl bg-neutral-900 cursor-none"
+                            <Link href={`/portfolio/${project.slug}`} key={project.id} className="block cursor-none group relative rounded-xl overflow-hidden break-inside-avoid shadow-2xl bg-neutral-900"
                                 onMouseEnter={() => {
                                     setCursorText(coverMedia?.media_type === 'video' ? 'PLAY' : 'VIEW');
                                     setCursorVariant('project');
@@ -101,35 +100,36 @@ export default function PortfolioPage() {
                                 onMouseLeave={() => {
                                     setCursorText('');
                                     setCursorVariant('default');
-                                }}
-                            >
-                                {coverMedia ? (
-                                    coverMedia.media_type === 'video' ? (
-                                        <video
-                                            src={coverMedia.file_url}
-                                            className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-700 pointer-events-none"
-                                            muted loop playsInline
-                                            onMouseEnter={(e) => e.currentTarget.play()}
-                                            onMouseLeave={(e) => e.currentTarget.pause()}
-                                        />
+                                }}>
+                                <div className="portfolio-item pointer-events-none">
+                                    {coverMedia ? (
+                                        coverMedia.media_type === 'video' ? (
+                                            <video
+                                                src={coverMedia.file_url}
+                                                className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-700"
+                                                muted loop playsInline
+                                                onMouseEnter={(e) => e.currentTarget.play()}
+                                                onMouseLeave={(e) => e.currentTarget.pause()}
+                                            />
+                                        ) : (
+                                            <img
+                                                src={coverMedia.file_url}
+                                                alt={project.title}
+                                                className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-700"
+                                            />
+                                        )
                                     ) : (
-                                        <img
-                                            src={coverMedia.file_url}
-                                            alt={project.title}
-                                            className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-700 pointer-events-none"
-                                        />
-                                    )
-                                ) : (
-                                    <div className="w-full aspect-square bg-neutral-800 flex items-center justify-center pointer-events-none">
-                                        <span className="text-gray-500 text-sm">No Media</span>
-                                    </div>
-                                )}
+                                        <div className="w-full aspect-square bg-neutral-800 flex items-center justify-center">
+                                            <span className="text-gray-500 text-sm">No Media</span>
+                                        </div>
+                                    )}
 
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-8">
-                                    <h3 className="text-2xl font-bold uppercase tracking-wide text-white mb-2">{project.title}</h3>
-                                    <p className="text-gray-300 text-sm">{project.client}</p>
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-8">
+                                        <h3 className="text-2xl font-bold uppercase tracking-wide text-white mb-2">{project.title}</h3>
+                                        <p className="text-gray-300 text-sm">{project.client}</p>
+                                    </div>
                                 </div>
-                            </div>
+                            </Link>
                         );
                     })}
                 </div>

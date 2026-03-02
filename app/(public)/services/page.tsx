@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import Link from "next/link";
 
 export default function ServicesPage() {
     const container = useRef<HTMLDivElement>(null);
@@ -47,26 +48,30 @@ export default function ServicesPage() {
 
                 <div className="flex flex-col gap-8 md:gap-16">
                     {services.map((service, index) => (
-                        <div key={index} className="service-card group relative h-[50vh] md:h-[60vh] w-full rounded-2xl overflow-hidden shadow-2xl">
+                        <Link
+                            href={`/contact?category=${encodeURIComponent(service.title.toLowerCase())}`}
+                            key={index}
+                            className="service-card group relative h-[50vh] md:h-[60vh] w-full rounded-2xl overflow-hidden shadow-2xl block"
+                        >
                             <img
                                 src={service.image}
                                 alt={service.title}
                                 className="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-1000"
                             />
-                            <div className="absolute inset-0 bg-black/50 group-hover:bg-black/30 transition-colors duration-700" />
+                            <div className="absolute inset-0 bg-black/60 md:bg-black/50 md:group-hover:bg-black/30 transition-colors duration-700" />
 
                             <div className="absolute inset-0 flex flex-col justify-end p-8 md:p-16">
                                 <p className="text-gray-300 tracking-widest uppercase text-sm mb-4 font-semibold">
                                     0{index + 1}
                                 </p>
-                                <h2 className="text-4xl md:text-6xl font-bold text-white uppercase tracking-tight mb-4 group-hover:pl-4 transition-all duration-500">
+                                <h2 className="text-3xl md:text-6xl font-bold text-white uppercase tracking-tight mb-4 group-hover:pl-4 transition-all duration-500">
                                     {service.title}
                                 </h2>
-                                <p className="max-w-xl text-gray-200 text-lg md:text-xl font-light opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-700 delay-100">
+                                <p className="max-w-xl text-gray-200 text-base md:text-xl font-light opacity-100 md:opacity-0 md:translate-y-4 md:group-hover:opacity-100 md:group-hover:translate-y-0 transition-all duration-700 delay-100">
                                     {service.desc}
                                 </p>
                             </div>
-                        </div>
+                        </Link>
                     ))}
                 </div>
             </div>

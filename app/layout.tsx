@@ -17,8 +17,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Creative Portfolio | Visuals & Motion",
-  description: "A breathtaking cinematic creative portfolio featuring photography, videography, and drone imagery.",
+  title: "Techboy Portfolio | Visuals & Motion",
+  description: "A breathtaking cinematic creative portfolio belonging to Techboy featuring photography, videography, and drone imagery.",
 };
 
 export default function RootLayout({
