@@ -9,6 +9,7 @@ import { useCursor } from "@/components/CursorContext";
 import { createClient } from "@/lib/supabase/client";
 import { Database } from "@/types/supabase";
 import Link from "next/link";
+import Preloader from "@/components/Preloader";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -394,6 +395,7 @@ function DynamicServices() {
 
   return (
     <>
+      <Preloader />
       <div className="absolute inset-0 z-0 bg-black">
         {services.map((srv, idx) => (
           <img
