@@ -70,7 +70,7 @@ export interface Database {
       }
       projects: {
         Row: {
-          category: 'photo' | 'video' | 'drone' | 'edit'
+          category: 'videography' | 'drone pilot' | 'photography' | 'video editor' | 'motion graphics'
           client: string | null
           created_at: string | null
           description: string | null
@@ -80,7 +80,7 @@ export interface Database {
           title: string
         }
         Insert: {
-          category: 'photo' | 'video' | 'drone' | 'edit'
+          category: 'videography' | 'drone pilot' | 'photography' | 'video editor' | 'motion graphics'
           client?: string | null
           created_at?: string | null
           description?: string | null
@@ -90,7 +90,7 @@ export interface Database {
           title: string
         }
         Update: {
-          category?: 'photo' | 'video' | 'drone' | 'edit'
+          category?: 'videography' | 'drone pilot' | 'photography' | 'video editor' | 'motion graphics'
           client?: string | null
           created_at?: string | null
           description?: string | null
@@ -98,6 +98,33 @@ export interface Database {
           is_featured?: boolean | null
           slug?: string
           title?: string
+        }
+        Relationships: []
+      }
+      testimonials: {
+        Row: {
+          id: string
+          name: string
+          role: string | null
+          content: string
+          rating: number | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          role?: string | null
+          content: string
+          rating?: number | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          role?: string | null
+          content?: string
+          rating?: number | null
+          created_at?: string
         }
         Relationships: []
       }

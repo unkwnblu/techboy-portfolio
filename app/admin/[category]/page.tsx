@@ -2,28 +2,53 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { Plus, Edit2, Trash2, FolderGit2 } from "lucide-react";
 import { deleteProject } from "./actions";
+import { notFound } from "next/navigation";
 
-export default async function MediaPage() {
+// Utility to convert slug (e.g. drone-pilot) to DB enum (e.g. drone pilot)
+type ProjectCategory = 'videography' | 'drone pilot' | 'photography' | 'video editor' | 'motion graphics';
+
+function getDbCategory(slug: string): ProjectCategory | null {
+    const map: Record<string, ProjectCategory> = {
+        'videography': 'videography',
+        'drone-pilot': 'drone pilot',
+        'photography': 'photography',
+        'video-editor': 'video editor',
+        'motion-graphics': 'motion graphics'
+    };
+    return map[slug] || null;
+}
+
+export default async function CategoryPage({ params }: { params: { category: string } }) {
+    const dbCategory = getDbCategory(params.category);
+
+    if (!dbCategory) {
+        notFound();
+    }
+
     const supabase = await createClient();
 
     const { data: projects } = await supabase
         .from("projects")
         .select("*, media(*)")
+        .eq("category", dbCategory)
         .order("created_at", { ascending: false });
+
+    // Format display title (e.g. Drone Pilot)
+    const displayTitle = dbCategory.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 
     return (
         <div className="space-y-8">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold uppercase tracking-widest mb-2">Projects & Media</h1>
-                    <p className="text-gray-400">Manage your portfolio projects and associated files.</p>
+                    <h1 className="text-3xl font-bold uppercase tracking-widest mb-2">{displayTitle} Projects</h1>
+                    <p className="text-gray-400">Manage your {displayTitle.toLowerCase()} portfolio projects.</p>
                 </div>
                 <Link
-                    href="/admin/media/new"
+                    href={`/admin/${params.category}/new`}
                     className="flex items-center gap-2 bg-white text-black px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors uppercase tracking-widest text-sm"
                 >
                     <Plus className="w-4 h-4" />
-                    New Project
+                    New {displayTitle}
                 </Link>
             </div>
 
@@ -68,7 +93,7 @@ export default async function MediaPage() {
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         <div className="flex items-center justify-end gap-2">
-                                            <Link href={`/admin/media/${project.id}`} title="Edit Project" className="p-2 text-gray-400 hover:text-white transition-colors">
+                                            <Link href={`/admin/${params.category}/${project.id}`} title="Edit Project" className="p-2 text-gray-400 hover:text-white transition-colors">
                                                 <Edit2 className="w-4 h-4" />
                                             </Link>
                                             <form action={deleteProject}>
@@ -86,7 +111,7 @@ export default async function MediaPage() {
                 ) : (
                     <div className="p-12 text-center text-gray-500 flex flex-col items-center">
                         <FolderGit2 className="w-12 h-12 mb-4 opacity-20" />
-                        <p>No projects found. Create your first project.</p>
+                        <p>No projects found. Create your first {displayTitle} project.</p>
                     </div>
                 )}
             </div>

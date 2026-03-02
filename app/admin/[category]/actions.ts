@@ -31,7 +31,7 @@ export async function deleteProject(formData: FormData) {
         .delete()
         .eq("id", id);
 
-    revalidatePath("/admin/media");
+    revalidatePath("/admin", "layout");
     revalidatePath("/admin/dashboard");
     revalidatePath("/portfolio");
 }
@@ -43,7 +43,7 @@ export async function uploadProjectAndMedia(formData: FormData) {
     const title = formData.get("title") as string;
     const slug = formData.get("slug") as string;
     const client = formData.get("client") as string;
-    const category = formData.get("category") as 'photo' | 'video' | 'drone' | 'edit';
+    const category = formData.get("category") as 'videography' | 'drone pilot' | 'photography' | 'video editor' | 'motion graphics';
     const description = formData.get("description") as string;
     const is_featured = formData.get("is_featured") === "true";
 
@@ -93,7 +93,7 @@ export async function uploadProjectAndMedia(formData: FormData) {
             ]);
     }
 
-    revalidatePath("/admin/media");
+    revalidatePath("/admin", "layout");
     revalidatePath("/admin/dashboard");
     revalidatePath("/portfolio");
     revalidatePath("/");
@@ -101,11 +101,55 @@ export async function uploadProjectAndMedia(formData: FormData) {
     return { success: true };
 }
 
+export async function createProjectRecord(data: {
+    title: string;
+    slug: string;
+    client: string;
+    category: 'videography' | 'drone pilot' | 'photography' | 'video editor' | 'motion graphics';
+    description: string;
+    is_featured: boolean;
+}) {
+    const supabase = await createClient();
+    const { data: project, error } = await supabase
+        .from("projects")
+        .insert([data])
+        .select()
+        .single();
+
+    if (error) return { error: error.message };
+    return { project };
+}
+
+export async function addMediaRecord(projectId: string, fileName: string, mediaType: 'image' | 'video', sortOrder: number) {
+    const supabase = await createClient();
+    const { data: publicUrlData } = supabase.storage
+        .from('media')
+        .getPublicUrl(fileName);
+
+    const { error } = await supabase
+        .from("media")
+        .insert([
+            {
+                project_id: projectId,
+                file_url: publicUrlData.publicUrl,
+                media_type: mediaType,
+                sort_order: sortOrder
+            }
+        ]);
+
+    if (error) return { error: error.message };
+
+    revalidatePath("/admin", "layout");
+    revalidatePath("/portfolio");
+    revalidatePath("/");
+    return { success: true };
+}
+
 export async function updateProject(formData: FormData) {
     const id = formData.get("id") as string;
     const title = formData.get("title") as string;
     const client = formData.get("client") as string;
-    const category = formData.get("category") as 'photo' | 'video' | 'drone' | 'edit';
+    const category = formData.get("category") as 'videography' | 'drone pilot' | 'photography' | 'video editor' | 'motion graphics';
     const description = formData.get("description") as string;
     const is_featured = formData.get("is_featured") === "on";
 
@@ -124,8 +168,8 @@ export async function updateProject(formData: FormData) {
 
     if (error) throw new Error(error.message);
 
-    revalidatePath("/admin/media");
-    revalidatePath(`/admin/media/${id}`);
+    revalidatePath("/admin", "layout");
+    revalidatePath(`/admin/${category}/${id}`);
     revalidatePath("/portfolio");
     revalidatePath("/");
 

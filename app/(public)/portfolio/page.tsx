@@ -16,7 +16,7 @@ type Project = Database['public']['Tables']['projects']['Row'] & {
 
 export default function PortfolioPage() {
     const [projects, setProjects] = useState<Project[]>([]);
-    const [filter, setFilter] = useState<'all' | 'photo' | 'video' | 'drone' | 'edit'>('all');
+    const [filter, setFilter] = useState<'all' | 'videography' | 'drone pilot' | 'photography' | 'video editor' | 'motion graphics'>('all');
     const [loading, setLoading] = useState(true);
     const supabase = createClient();
     const { setCursorText, setCursorVariant } = useCursor();
@@ -56,10 +56,11 @@ export default function PortfolioPage() {
 
     const filters = [
         { label: 'All', value: 'all' },
-        { label: 'Photography', value: 'photo' },
-        { label: 'Videography', value: 'video' },
-        { label: 'Drone', value: 'drone' },
-        { label: 'Editing', value: 'edit' },
+        { label: 'Videography', value: 'videography' },
+        { label: 'Drone Pilot', value: 'drone pilot' },
+        { label: 'Photography', value: 'photography' },
+        { label: 'Video Editor', value: 'video editor' },
+        { label: 'Motion Graphics', value: 'motion graphics' },
     ] as const;
 
     return (

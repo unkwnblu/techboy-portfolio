@@ -24,10 +24,19 @@ export default async function AdminLayout({
                         <LayoutDashboard className="w-5 h-5" />
                         <span>Dashboard</span>
                     </Link>
-                    <Link href="/admin/media" className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors">
-                        <ImageIcon className="w-5 h-5" />
-                        <span>Media & Projects</span>
-                    </Link>
+                    <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-3 text-gray-400 font-medium px-2 uppercase tracking-widest text-xs mt-4">
+                            <ImageIcon className="w-4 h-4" />
+                            <span>Media Portfolios</span>
+                        </div>
+                        <div className="pl-6 flex flex-col gap-2 mt-2">
+                            <Link href="/admin/videography" className="text-gray-500 hover:text-white text-sm transition-colors">Videography</Link>
+                            <Link href="/admin/drone-pilot" className="text-gray-500 hover:text-white text-sm transition-colors">Drone Pilot</Link>
+                            <Link href="/admin/photography" className="text-gray-500 hover:text-white text-sm transition-colors">Photography</Link>
+                            <Link href="/admin/video-editor" className="text-gray-500 hover:text-white text-sm transition-colors">Video Editor</Link>
+                            <Link href="/admin/motion-graphics" className="text-gray-500 hover:text-white text-sm transition-colors">Motion Graphics</Link>
+                        </div>
+                    </div>
                     <Link href="/admin/inquiries" className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors">
                         <MessageSquare className="w-5 h-5" />
                         <span>Inquiries</span>

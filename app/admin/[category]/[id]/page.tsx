@@ -7,7 +7,7 @@ import Link from "next/link";
 export default async function EditProjectPage({
     params
 }: {
-    params: Promise<{ id: string }>
+    params: Promise<{ category: string, id: string }>
 }) {
     const { id } = await params;
     const supabase = await createClient();
@@ -25,7 +25,7 @@ export default async function EditProjectPage({
     return (
         <div className="max-w-3xl mx-auto space-y-8">
             <div className="flex items-center gap-4">
-                <Link href="/admin/media" className="p-2 bg-neutral-900 rounded-full hover:bg-neutral-800 transition-colors">
+                <Link href={`/admin/${(await params).category}`} className="p-2 bg-neutral-900 rounded-full hover:bg-neutral-800 transition-colors">
                     <ArrowLeft className="w-5 h-5 text-gray-400 hover:text-white" />
                 </Link>
                 <div>
@@ -36,6 +36,7 @@ export default async function EditProjectPage({
 
             <form action={updateProject} className="bg-neutral-900 border border-neutral-800 rounded-2xl p-8 space-y-6">
                 <input type="hidden" name="id" value={project.id} />
+                <input type="hidden" name="category" value={project.category} />
 
                 <div className="space-y-4">
                     <div>
@@ -61,17 +62,13 @@ export default async function EditProjectPage({
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-400 mb-2">Category</label>
-                        <select
-                            name="category"
-                            defaultValue={project.category}
-                            className="w-full bg-black border border-neutral-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gray-500 transition-colors"
-                        >
-                            <option value="photo">Photography</option>
-                            <option value="video">Videography</option>
-                            <option value="drone">Drone</option>
-                            <option value="edit">Editing</option>
-                        </select>
+                        <label className="block text-sm font-medium text-gray-400 mb-2">Category (Locked)</label>
+                        <input
+                            type="text"
+                            disabled
+                            value={project.category.toUpperCase()}
+                            className="w-full bg-black/50 text-gray-500 border border-neutral-800 rounded-lg px-4 py-3 cursor-not-allowed focus:outline-none transition-colors"
+                        />
                     </div>
                 </div>
 
