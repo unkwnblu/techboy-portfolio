@@ -31,6 +31,7 @@ export default function NewTestimonialPage() {
                 setLoading(false);
             }
         } catch (err: any) {
+            if (err?.digest?.startsWith("NEXT_REDIRECT")) throw err;
             setError(err.message || "An unexpected error occurred.");
             setLoading(false);
         }
