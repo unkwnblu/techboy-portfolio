@@ -1,4 +1,4 @@
-import { login } from "@/app/(admin)/auth/actions";
+import { login } from "@/app/admin/auth/actions";
 import { Lock } from "lucide-react";
 
 export default function LoginPage({
