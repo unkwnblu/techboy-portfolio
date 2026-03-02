@@ -160,7 +160,10 @@ export default async function AdminLayout({
             </aside>
 
             {/* ─── Main content ─── */}
-            <main className="flex-1 overflow-y-auto">
+            <main
+                className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                data-lenis-prevent
+            >
                 {/* Top bar */}
                 <div className="sticky top-0 z-10 bg-[#0a0a0a]/80 backdrop-blur-md border-b border-white/[0.04] px-8 py-3 flex items-center justify-between">
                     <div className="flex items-center gap-2 text-[11px] text-white/20 uppercase tracking-widest font-medium">

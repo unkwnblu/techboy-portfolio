@@ -4,7 +4,7 @@ import { useRef, useEffect, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
-import { ArrowDown, Loader2 } from "lucide-react";
+import { ArrowDown, Loader2, X } from "lucide-react";
 import { useCursor } from "@/components/CursorContext";
 import { createClient } from "@/lib/supabase/client";
 import { Database } from "@/types/supabase";
@@ -24,6 +24,9 @@ export default function Home() {
 
   const [featuredProjects, setFeaturedProjects] = useState<ProjectWithMedia[]>([]);
   const [loadingFeatured, setLoadingFeatured] = useState(true);
+  const [overlayVideo, setOverlayVideo] = useState<{ url: string; title: string } | null>(null);
+
+  const VIDEO_CATEGORIES = new Set(['videography', 'drone pilot', 'video editor']);
 
   useEffect(() => {
     async function fetchFeatured() {
@@ -50,6 +53,19 @@ export default function Home() {
     }
     fetchFeatured();
   }, []);
+
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOverlayVideo(null);
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = overlayVideo ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [overlayVideo]);
 
   useGSAP(() => {
     // --- Hero Animations ---
@@ -200,109 +216,85 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 3. Featured Work Bento Grid */}
-      <section className="py-32 px-4 md:px-8 max-w-7xl mx-auto">
-        <h2 className="text-4xl md:text-6xl font-bold uppercase tracking-tighter mb-16 text-center">Selected Works</h2>
+      {/* 3. Featured Work — Horizontal Scroll */}
+      <section className="py-32">
+        <h2 className="text-4xl md:text-6xl font-bold uppercase tracking-tighter mb-16 text-center px-4 md:px-8">Selected Works</h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 auto-rows-[300px] md:auto-rows-[400px]">
-          {loadingFeatured ? (
-            <div className="col-span-full flex items-center justify-center h-full min-h-[400px]">
-              <Loader2 className="w-8 h-8 animate-spin text-gray-500" />
-            </div>
-          ) : featuredProjects.length > 0 ? (
-            featuredProjects.map((project, index) => {
+        {loadingFeatured ? (
+          <div className="flex items-center justify-center h-[500px]">
+            <Loader2 className="w-8 h-8 animate-spin text-gray-500" />
+          </div>
+        ) : featuredProjects.length > 0 ? (
+          <div
+            className="flex gap-4 md:gap-6 overflow-x-auto px-4 md:px-8 pb-4"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
+            {featuredProjects.map((project) => {
               const mainMedia = project.media?.[0];
               const isVideoInput = mainMedia?.media_type === 'video';
               const mediaUrl = mainMedia?.file_url || "";
+              const isVideoCategory = VIDEO_CATEGORIES.has(project.category ?? '');
 
-              const media = isVideoInput ? (
-                <video
-                  src={mediaUrl}
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  suppressHydrationWarning
-                  className="absolute inset-0 w-full h-full object-contain"
-                />
-              ) : (
-                <img
-                  src={mediaUrl}
-                  alt={project.title}
-                  className="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-1000"
-                />
+              const cardInner = (
+                <>
+                  {isVideoInput ? (
+                    <video
+                      src={mediaUrl}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      suppressHydrationWarning
+                      className="h-full w-auto"
+                    />
+                  ) : (
+                    <img
+                      src={mediaUrl}
+                      alt={project.title}
+                      className="h-full w-auto transform group-hover:scale-105 transition-transform duration-700"
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-6 pointer-events-none">
+                    <h3 className="text-xl font-bold uppercase tracking-wide">{project.title}</h3>
+                    <p className="text-gray-400 text-sm capitalize mt-1">{project.category?.replace('_', ' ')}</p>
+                  </div>
+                </>
               );
 
-              if (index === 0) {
-                return (
-                  <Link
-                    key={project.id} href={`/portfolio/${project.slug}`}
-                    className="md:col-span-2 rounded-2xl overflow-hidden relative group cursor-none block bg-black"
-                    onMouseEnter={() => { setCursorText(isVideoInput ? "PLAY" : "VIEW"); setCursorVariant("project"); }}
-                    onMouseLeave={() => { setCursorText(""); setCursorVariant("default"); }}
-                  >
-                    {media}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-8 z-10 pointer-events-none">
-                      <h3 className="text-3xl font-bold uppercase tracking-wide">{project.title}</h3>
-                      <p className="text-gray-400 capitalize">{project.category?.replace('_', ' ')}</p>
-                    </div>
-                  </Link>
-                );
-              }
+              const sharedClass = "flex-shrink-0 h-[480px] md:h-[540px] rounded-2xl overflow-hidden relative group cursor-none bg-neutral-900 block";
 
-              if (index === 1) {
+              if (isVideoCategory) {
                 return (
-                  <Link
-                    key={project.id} href={`/portfolio/${project.slug}`}
-                    className="md:row-span-2 rounded-2xl overflow-hidden relative group cursor-none block bg-black"
-                    onMouseEnter={() => { setCursorText(isVideoInput ? "PLAY" : "VIEW"); setCursorVariant("project"); }}
+                  <div
+                    key={project.id}
+                    className={sharedClass}
+                    onClick={() => mediaUrl && setOverlayVideo({ url: mediaUrl, title: project.title })}
+                    onMouseEnter={() => { setCursorText("PLAY"); setCursorVariant("project"); }}
                     onMouseLeave={() => { setCursorText(""); setCursorVariant("default"); }}
                   >
-                    {media}
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col items-center justify-center p-8 z-10 pointer-events-none backdrop-blur-sm">
-                      <h3 className="text-2xl font-bold uppercase tracking-wide text-center">{project.title}</h3>
-                      <p className="text-sm font-medium uppercase tracking-widest text-gray-300 mt-2">{project.category?.replace('_', ' ')}</p>
-                    </div>
-                  </Link>
-                );
-              }
-
-              if (index === 2) {
-                return (
-                  <Link
-                    key={project.id} href={`/portfolio/${project.slug}`}
-                    className="rounded-2xl overflow-hidden relative group cursor-none block bg-black"
-                    onMouseEnter={() => { setCursorText(isVideoInput ? "PLAY" : "VIEW"); setCursorVariant("project"); }}
-                    onMouseLeave={() => { setCursorText(""); setCursorVariant("default"); }}
-                  >
-                    {media}
-                    <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none">
-                      <p className="font-bold uppercase tracking-widest text-sm">{project.title}</p>
-                    </div>
-                  </Link>
+                    {cardInner}
+                  </div>
                 );
               }
 
               return (
                 <Link
-                  key={project.id} href={`/portfolio/${project.slug}`}
-                  className="rounded-2xl overflow-hidden relative group cursor-none block bg-black"
+                  key={project.id}
+                  href={`/portfolio/${project.slug}`}
+                  className={sharedClass}
                   onMouseEnter={() => { setCursorText(isVideoInput ? "PLAY" : "VIEW"); setCursorVariant("project"); }}
                   onMouseLeave={() => { setCursorText(""); setCursorVariant("default"); }}
                 >
-                  {media}
-                  <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none">
-                    <p className="font-bold uppercase tracking-widest text-sm">{project.title}</p>
-                  </div>
+                  {cardInner}
                 </Link>
               );
-            })
-          ) : (
-            <div className="col-span-full flex items-center justify-center h-[400px]">
-              <p className="text-gray-500 font-medium tracking-widest uppercase text-sm">NO FEATURED WORKS YET.</p>
-            </div>
-          )}
-        </div>
+            })}
+          </div>
+        ) : (
+          <div className="flex items-center justify-center h-[400px] px-8">
+            <p className="text-gray-500 font-medium tracking-widest uppercase text-sm">No featured works yet.</p>
+          </div>
+        )}
       </section>
 
       {/* 4. Dynamic Capabilities / Services */}
@@ -354,6 +346,35 @@ export default function Home() {
           </div>
         </footer>
       </section>
+
+      {/* Video overlay */}
+      {overlayVideo && (
+        <div
+          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center"
+          onClick={() => setOverlayVideo(null)}
+        >
+          <button
+            className="absolute top-6 right-6 p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white/70 hover:text-white transition-all"
+            onClick={() => setOverlayVideo(null)}
+          >
+            <X className="w-5 h-5" />
+          </button>
+          <div
+            className="relative flex flex-col items-center px-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <video
+              src={overlayVideo.url}
+              className="max-h-[85vh] max-w-[90vw] w-auto rounded-xl shadow-2xl"
+              controls
+              autoPlay
+            />
+            <p className="text-white/40 text-xs uppercase tracking-widest mt-3 text-center">
+              {overlayVideo.title}
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
