@@ -18,8 +18,9 @@ function getDbCategory(slug: string): ProjectCategory | null {
     return map[slug] || null;
 }
 
-export default async function CategoryPage({ params }: { params: { category: string } }) {
-    const dbCategory = getDbCategory(params.category);
+export default async function CategoryPage({ params }: { params: Promise<{ category: string }> }) {
+    const { category } = await params;
+    const dbCategory = getDbCategory(category);
 
     if (!dbCategory) {
         notFound();
@@ -44,7 +45,7 @@ export default async function CategoryPage({ params }: { params: { category: str
                     <p className="text-gray-400">Manage your {displayTitle.toLowerCase()} portfolio projects.</p>
                 </div>
                 <Link
-                    href={`/admin/${params.category}/new`}
+                    href={`/admin/${category}/new`}
                     className="flex items-center gap-2 bg-white text-black px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors uppercase tracking-widest text-sm"
                 >
                     <Plus className="w-4 h-4" />
@@ -93,7 +94,7 @@ export default async function CategoryPage({ params }: { params: { category: str
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         <div className="flex items-center justify-end gap-2">
-                                            <Link href={`/admin/${params.category}/${project.id}`} title="Edit Project" className="p-2 text-gray-400 hover:text-white transition-colors">
+                                            <Link href={`/admin/${category}/${project.id}`} title="Edit Project" className="p-2 text-gray-400 hover:text-white transition-colors">
                                                 <Edit2 className="w-4 h-4" />
                                             </Link>
                                             <form action={deleteProject}>

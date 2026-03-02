@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import { LayoutDashboard, Image as ImageIcon, MessageSquare, LogOut } from "lucide-react";
+import { LayoutDashboard, Image as ImageIcon, MessageSquare, LogOut, MessageSquareQuote } from "lucide-react";
 
 export default async function AdminLayout({
     children,
@@ -37,6 +37,10 @@ export default async function AdminLayout({
                             <Link href="/admin/motion-graphics" className="text-gray-500 hover:text-white text-sm transition-colors">Motion Graphics</Link>
                         </div>
                     </div>
+                    <Link href="/admin/testimonials" className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors">
+                        <MessageSquareQuote className="w-5 h-5" />
+                        <span>Testimonials</span>
+                    </Link>
                     <Link href="/admin/inquiries" className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors">
                         <MessageSquare className="w-5 h-5" />
                         <span>Inquiries</span>

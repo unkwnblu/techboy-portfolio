@@ -36,6 +36,7 @@ export default function Navbar() {
     const navLinks = [
         { name: "Portfolio", href: "/portfolio" },
         { name: "Services", href: "/services" },
+        { name: "Testimonials", href: "/testimonials" },
         { name: "About", href: "/about" },
         { name: "Contact", href: "/contact" },
     ];
@@ -44,8 +45,8 @@ export default function Navbar() {
         <>
             <nav
                 className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${mobileMenuOpen || !scrolled
-                        ? "bg-transparent py-6"
-                        : "bg-black/90 backdrop-blur-md py-4 border-b border-white/10"
+                    ? "bg-transparent py-6"
+                    : "bg-black/90 backdrop-blur-md py-4 border-b border-white/10"
                     } ${!scrolled && !mobileMenuOpen ? "mix-blend-difference" : ""} text-white`}
             >
                 <div className="flex items-center justify-between px-8 max-w-7xl mx-auto relative z-[60]">
