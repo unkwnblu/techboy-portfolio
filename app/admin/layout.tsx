@@ -12,6 +12,7 @@ import {
     Inbox,
     LogOut,
     ExternalLink,
+    Settings,
 } from "lucide-react";
 
 export default async function AdminLayout({
@@ -135,6 +136,13 @@ export default async function AdminLayout({
 
                 {/* Footer */}
                 <div className="border-t border-white/[0.05] p-3">
+                    <Link
+                        href="/admin/settings"
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-white/50 hover:text-white hover:bg-white/[0.05] transition-all text-[13px] font-medium mb-0.5"
+                    >
+                        <Settings className="w-3.5 h-3.5 flex-shrink-0" />
+                        Settings
+                    </Link>
                     <a
                         href="/"
                         target="_blank"

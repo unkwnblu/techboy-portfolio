@@ -99,7 +99,9 @@ export default async function DashboardPage() {
                     </p>
                     <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
                         {greeting},{" "}
-                        <span className="text-white/40">Seun</span>
+                        <span className="text-white/40">
+                            {user?.user_metadata?.full_name || user?.email?.split("@")[0] || "Admin"}
+                        </span>
                     </h1>
                 </div>
                 <Link
