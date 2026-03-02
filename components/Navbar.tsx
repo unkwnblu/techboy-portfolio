@@ -52,9 +52,9 @@ export default function Navbar() {
                 <div className="flex items-center justify-between px-8 max-w-7xl mx-auto relative z-[60]">
                     <Link href="/" className="flex items-center group" onClick={() => setMobileMenuOpen(false)}>
                         <img
-                            src="/logo.svg"
+                            src="/logo.png"
                             alt="Techboy"
-                            className="h-12 w-auto transition-opacity group-hover:opacity-80"
+                            className="h-20 w-auto transition-opacity group-hover:opacity-80"
                         />
                     </Link>
 

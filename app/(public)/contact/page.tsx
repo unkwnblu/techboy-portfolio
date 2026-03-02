@@ -39,7 +39,8 @@ function ContactFormContent() {
         setLoading(true);
         setError(null);
 
-        const formData = new FormData(e.currentTarget);
+        const form = e.currentTarget;
+        const formData = new FormData(form);
         const data = {
             name: formData.get("name") as string,
             email: formData.get("email") as string,
@@ -58,7 +59,7 @@ function ContactFormContent() {
             console.error(insertError);
         } else {
             setSuccess(true);
-            e.currentTarget.reset();
+            form.reset();
         }
     }
 

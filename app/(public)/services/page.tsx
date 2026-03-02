@@ -19,22 +19,32 @@ export default function ServicesPage() {
     const services = [
         {
             title: "Cinematic Videography",
+            slug: "cinematic-videography",
             desc: "High-end 4K/6K video production tailored for commercial, narrative, and documentary projects.",
             image: "https://images.unsplash.com/photo-1589851610421-4f11550c60ba?w=800&q=80"
         },
         {
             title: "Aerial Drone Operations",
+            slug: "aerial-drone",
             desc: "Licensed FPV and stabilized drone filming capturing breathtaking perspectives and dynamic action.",
             image: "https://images.unsplash.com/photo-1579893962630-f80e9bd7f176?w=800&q=80"
         },
         {
             title: "Photography",
+            slug: "photography",
             desc: "Striking visual stills focused on lighting, composition, and raw emotion.",
             image: "https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=800&q=80"
         },
         {
             title: "Post-Production & Editing",
+            slug: "post-production",
             desc: "Expert color grading, sound design, and narrative shaping to bring the final vision to life.",
+            image: "https://images.unsplash.com/photo-1616423640778-28d1b53229bd?w=800&q=80"
+        },
+        {
+            title: "Motion Graphics",
+            slug: "motion-graphics",
+            desc: "Dynamic animated visuals for branding, commercials, and digital media.",
             image: "https://images.unsplash.com/photo-1616423640778-28d1b53229bd?w=800&q=80"
         }
     ];
@@ -49,7 +59,7 @@ export default function ServicesPage() {
                 <div className="flex flex-col gap-8 md:gap-16">
                     {services.map((service, index) => (
                         <Link
-                            href={`/contact?category=${encodeURIComponent(service.title.toLowerCase())}`}
+                            href={`/services/${service.slug}`}
                             key={index}
                             className="service-card group relative h-[50vh] md:h-[60vh] w-full rounded-2xl overflow-hidden shadow-2xl block"
                         >

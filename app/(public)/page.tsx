@@ -340,9 +340,9 @@ export default function Home() {
           </div>
 
           <div className="flex gap-8 text-sm uppercase tracking-widest font-medium">
+            <a href="#" className="text-gray-400 hover:text-white transition-colors">YouTube</a>
+            <a href="#" className="text-gray-400 hover:text-white transition-colors">TikTok</a>
             <a href="#" className="text-gray-400 hover:text-white transition-colors">Instagram</a>
-            <a href="#" className="text-gray-400 hover:text-white transition-colors">Vimeo</a>
-            <a href="#" className="text-gray-400 hover:text-white transition-colors">Twitter</a>
           </div>
         </footer>
       </section>
