@@ -385,10 +385,11 @@ function DynamicServices() {
   const { setCursorVariant } = useCursor();
 
   const services = [
-    { name: "Cinematic Direction", bg: "https://images.unsplash.com/photo-1537222716174-8b63e5276e0a?w=1600&q=80" },
-    { name: "Aerial Drone Piloting", bg: "https://images.unsplash.com/photo-1508614589041-895b88991e3e?w=1600&q=80" },
-    { name: "Color Grading", bg: "https://images.unsplash.com/photo-1473691955023-da1c49c95c78?w=1600&q=80" },
-    { name: "Sound Design", bg: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=1600&q=80" }
+    { name: "Videography", href: "/portfolio?filter=videography", bg: "https://images.unsplash.com/photo-1537222716174-8b63e5276e0a?w=1600&q=80" },
+    { name: "Drone Pilot", href: "/portfolio?filter=drone-pilot", bg: "https://images.unsplash.com/photo-1508614589041-895b88991e3e?w=1600&q=80" },
+    { name: "Photography", href: "/portfolio?filter=photography", bg: "https://images.unsplash.com/photo-1605369572399-05d8d64a0f6e?w=1600&q=80" },
+    { name: "Video Editor", href: "/portfolio?filter=video-editor", bg: "https://images.unsplash.com/photo-1473691955023-da1c49c95c78?w=1600&q=80" },
+    { name: "Motion Graphics", href: "/portfolio?filter=motion-graphics", bg: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=1600&q=80" },
   ];
 
   return (
@@ -414,12 +415,17 @@ function DynamicServices() {
           {services.map((srv, idx) => (
             <li
               key={idx}
-              className="py-8 md:py-12 border-b border-white/20 flex flex-col group cursor-pointer"
+              className="border-b border-white/20 group cursor-none"
               onMouseEnter={() => setActiveBg(idx)}
             >
-              <h2 className="text-4xl md:text-7xl font-bold uppercase tracking-tighter text-gray-500 group-hover:text-white transition-colors duration-500 group-hover:translate-x-4 transform">
-                {srv.name}
-              </h2>
+              <a
+                href={srv.href}
+                className="py-8 md:py-12 flex items-center justify-between"
+              >
+                <h2 className="text-4xl md:text-7xl font-bold uppercase tracking-tighter text-gray-500 group-hover:text-white transition-colors duration-500 group-hover:translate-x-4 transform">
+                  {srv.name}
+                </h2>
+              </a>
             </li>
           ))}
         </ul>
