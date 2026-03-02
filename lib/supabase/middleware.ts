@@ -33,16 +33,16 @@ export async function updateSession(request: NextRequest) {
     } = await supabase.auth.getUser()
 
     // Protect /admin routes
-    if (request.nextUrl.pathname.startsWith('/admin') && !request.nextUrl.pathname.startsWith('/admin/login')) {
+    if (request.nextUrl.pathname.startsWith('/admin')) {
         if (!user) {
             const url = request.nextUrl.clone()
-            url.pathname = '/admin/login'
+            url.pathname = '/login'
             return NextResponse.redirect(url)
         }
     }
 
     // Redirect to dashboard if logged in and visiting login
-    if (request.nextUrl.pathname.startsWith('/admin/login')) {
+    if (request.nextUrl.pathname === '/login') {
         if (user) {
             const url = request.nextUrl.clone()
             url.pathname = '/admin/dashboard'

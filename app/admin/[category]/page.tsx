@@ -1,121 +1,184 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import { Plus, Edit2, Trash2, FolderGit2 } from "lucide-react";
+import { Plus, Edit2, Trash2, FolderOpen, Star } from "lucide-react";
 import { deleteProject } from "./actions";
 import { notFound } from "next/navigation";
 
-// Utility to convert slug (e.g. drone-pilot) to DB enum (e.g. drone pilot)
-type ProjectCategory = 'videography' | 'drone pilot' | 'photography' | 'video editor' | 'motion graphics';
+type ProjectCategory =
+    | "videography"
+    | "drone pilot"
+    | "photography"
+    | "video editor"
+    | "motion graphics";
 
 function getDbCategory(slug: string): ProjectCategory | null {
     const map: Record<string, ProjectCategory> = {
-        'videography': 'videography',
-        'drone-pilot': 'drone pilot',
-        'photography': 'photography',
-        'video-editor': 'video editor',
-        'motion-graphics': 'motion graphics'
+        videography: "videography",
+        "drone-pilot": "drone pilot",
+        photography: "photography",
+        "video-editor": "video editor",
+        "motion-graphics": "motion graphics",
     };
     return map[slug] || null;
 }
 
-export default async function CategoryPage({ params }: { params: Promise<{ category: string }> }) {
+export default async function CategoryPage({
+    params,
+}: {
+    params: Promise<{ category: string }>;
+}) {
     const { category } = await params;
     const dbCategory = getDbCategory(category);
 
-    if (!dbCategory) {
-        notFound();
-    }
+    if (!dbCategory) notFound();
 
     const supabase = await createClient();
-
     const { data: projects } = await supabase
         .from("projects")
         .select("*, media(*)")
         .eq("category", dbCategory)
         .order("created_at", { ascending: false });
 
-    // Format display title (e.g. Drone Pilot)
-    const displayTitle = dbCategory.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    const displayTitle = dbCategory
+        .split(" ")
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(" ");
+
+    const featuredCount = projects?.filter((p) => p.is_featured).length ?? 0;
 
     return (
         <div className="space-y-8">
-            <div className="flex items-center justify-between">
+            {/* Header */}
+            <div className="flex items-start justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold uppercase tracking-widest mb-2">{displayTitle} Projects</h1>
-                    <p className="text-gray-400">Manage your {displayTitle.toLowerCase()} portfolio projects.</p>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/25 mb-1">
+                        Portfolio
+                    </p>
+                    <h1 className="text-2xl md:text-3xl font-bold tracking-tight">{displayTitle}</h1>
+                    <p className="text-white/35 text-sm mt-1">
+                        {projects?.length ?? 0} project{(projects?.length ?? 0) !== 1 ? "s" : ""}
+                        {featuredCount > 0 && (
+                            <span className="text-white/25"> · {featuredCount} featured</span>
+                        )}
+                    </p>
                 </div>
                 <Link
                     href={`/admin/${category}/new`}
-                    className="flex items-center gap-2 bg-white text-black px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors uppercase tracking-widest text-sm"
+                    className="flex items-center gap-2 bg-white text-black px-4 py-2.5 rounded-xl font-bold text-[12px] uppercase tracking-wider hover:bg-white/90 transition-colors flex-shrink-0"
                 >
-                    <Plus className="w-4 h-4" />
-                    New {displayTitle}
+                    <Plus className="w-3.5 h-3.5" />
+                    New Project
                 </Link>
             </div>
 
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl overflow-hidden">
-                {projects && projects.length > 0 ? (
-                    <table className="w-full text-left">
-                        <thead className="bg-black/50 text-gray-400 text-xs uppercase tracking-widest border-b border-neutral-800">
-                            <tr>
-                                <th className="px-6 py-4 font-medium">Project Title</th>
-                                <th className="px-6 py-4 font-medium hidden md:table-cell">Category</th>
-                                <th className="px-6 py-4 font-medium hidden lg:table-cell">Media Count</th>
-                                <th className="px-6 py-4 font-medium text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-neutral-800">
-                            {projects.map((project) => (
-                                <tr key={project.id} className="hover:bg-white/5 transition-colors">
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 rounded overflow-hidden bg-black flex-shrink-0 flex items-center justify-center">
-                                                {project.media && project.media.length > 0 ? (
-                                                    project.media[0].media_type === 'image' ? (
-                                                        <img src={project.media[0].file_url} className="w-full h-full object-cover" alt="" />
-                                                    ) : (
-                                                        <video src={project.media[0].file_url} className="w-full h-full object-cover" />
-                                                    )
-                                                ) : (
-                                                    <FolderGit2 className="w-5 h-5 text-gray-600" />
-                                                )}
-                                            </div>
-                                            <div>
-                                                <p className="font-semibold text-lg">{project.title}</p>
-                                                <p className="text-xs text-gray-400">{project.slug}</p>
-                                            </div>
+            {/* Projects */}
+            {projects && projects.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                    {projects.map((project) => {
+                        const thumb = project.media?.[0];
+                        return (
+                            <div
+                                key={project.id}
+                                className="group bg-white/[0.02] border border-white/[0.05] rounded-2xl overflow-hidden hover:border-white/[0.10] transition-all"
+                            >
+                                {/* Thumbnail */}
+                                <div className="relative h-44 bg-white/[0.02] overflow-hidden">
+                                    {thumb ? (
+                                        thumb.media_type === "image" ? (
+                                            <img
+                                                src={thumb.file_url}
+                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                                alt=""
+                                            />
+                                        ) : (
+                                            <video
+                                                src={thumb.file_url}
+                                                className="w-full h-full object-cover"
+                                                muted
+                                            />
+                                        )
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center">
+                                            <FolderOpen className="w-8 h-8 text-white/10" />
                                         </div>
-                                    </td>
-                                    <td className="px-6 py-4 hidden md:table-cell uppercase tracking-wider text-sm font-medium text-gray-300">
-                                        {project.category}
-                                    </td>
-                                    <td className="px-6 py-4 hidden lg:table-cell text-gray-400">
-                                        {project.media?.length || 0} Files
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <div className="flex items-center justify-end gap-2">
-                                            <Link href={`/admin/${category}/${project.id}`} title="Edit Project" className="p-2 text-gray-400 hover:text-white transition-colors">
-                                                <Edit2 className="w-4 h-4" />
+                                    )}
+
+                                    {/* Badges */}
+                                    <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
+                                        {project.is_featured ? (
+                                            <span className="flex items-center gap-1 bg-black/70 backdrop-blur-sm px-2 py-1 rounded-full">
+                                                <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
+                                                <span className="text-[9px] font-bold uppercase tracking-wider text-amber-300">
+                                                    Featured
+                                                </span>
+                                            </span>
+                                        ) : (
+                                            <span />
+                                        )}
+                                        <span className="bg-black/70 backdrop-blur-sm px-2 py-1 rounded-full text-[9px] text-white/50">
+                                            {project.media?.length ?? 0} files
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Content */}
+                                <div className="p-4">
+                                    <div className="mb-3">
+                                        <h3 className="font-semibold text-white/90 truncate text-sm">
+                                            {project.title}
+                                        </h3>
+                                        <p className="text-[10px] text-white/25 mt-0.5 truncate font-mono">
+                                            /{project.slug}
+                                        </p>
+                                    </div>
+
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[11px] text-white/30 truncate max-w-[120px]">
+                                            {project.client || "—"}
+                                        </span>
+                                        <div className="flex items-center gap-0.5">
+                                            <Link
+                                                href={`/admin/${category}/${project.id}`}
+                                                className="p-2 text-white/25 hover:text-white hover:bg-white/[0.06] rounded-lg transition-all"
+                                                title="Edit"
+                                            >
+                                                <Edit2 className="w-3.5 h-3.5" />
                                             </Link>
                                             <form action={deleteProject}>
                                                 <input type="hidden" name="id" value={project.id} />
-                                                <button type="submit" title="Delete Project" className="p-2 text-gray-400 hover:text-red-500 transition-colors">
-                                                    <Trash2 className="w-4 h-4" />
+                                                <button
+                                                    type="submit"
+                                                    title="Delete"
+                                                    className="p-2 text-white/25 hover:text-red-400 hover:bg-red-500/[0.06] rounded-lg transition-all"
+                                                >
+                                                    <Trash2 className="w-3.5 h-3.5" />
                                                 </button>
                                             </form>
                                         </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                ) : (
-                    <div className="p-12 text-center text-gray-500 flex flex-col items-center">
-                        <FolderGit2 className="w-12 h-12 mb-4 opacity-20" />
-                        <p>No projects found. Create your first {displayTitle} project.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            ) : (
+                <div className="flex flex-col items-center justify-center py-28 border border-white/[0.04] rounded-2xl text-center">
+                    <div className="w-16 h-16 rounded-2xl bg-white/[0.03] border border-white/[0.05] flex items-center justify-center mb-4">
+                        <FolderOpen className="w-7 h-7 text-white/15" />
                     </div>
-                )}
-            </div>
+                    <p className="text-white/35 text-sm mb-1">No {displayTitle} projects yet</p>
+                    <p className="text-white/20 text-xs mb-7">
+                        Upload your first project to populate this section
+                    </p>
+                    <Link
+                        href={`/admin/${category}/new`}
+                        className="flex items-center gap-2 bg-white text-black px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-white/90 transition-colors"
+                    >
+                        <Plus className="w-4 h-4" />
+                        Create First Project
+                    </Link>
+                </div>
+            )}
         </div>
     );
 }

@@ -13,74 +13,93 @@ export default async function TestimonialsAdminPage() {
 
     return (
         <div className="space-y-8">
-            <div className="flex items-center justify-between">
+            <div className="flex items-start justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold uppercase tracking-widest mb-2">Client Testimonials</h1>
-                    <p className="text-gray-400">Manage feedback from your clients to build trust.</p>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/25 mb-1">
+                        Content
+                    </p>
+                    <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Testimonials</h1>
+                    <p className="text-white/35 text-sm mt-1">
+                        {testimonials?.length ?? 0} review{(testimonials?.length ?? 0) !== 1 ? "s" : ""}
+                    </p>
                 </div>
                 <Link
                     href="/admin/testimonials/new"
-                    className="flex items-center gap-2 bg-white text-black px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors uppercase tracking-widest text-sm"
+                    className="flex items-center gap-2 bg-white text-black px-4 py-2.5 rounded-xl font-bold text-[12px] uppercase tracking-wider hover:bg-white/90 transition-colors flex-shrink-0"
                 >
-                    <Plus className="w-4 h-4" />
-                    New Testimonial
+                    <Plus className="w-3.5 h-3.5" />
+                    Add Review
                 </Link>
             </div>
 
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl overflow-hidden">
-                {testimonials && testimonials.length > 0 ? (
-                    <table className="w-full text-left">
-                        <thead className="bg-black/50 text-gray-400 text-xs uppercase tracking-widest border-b border-neutral-800">
-                            <tr>
-                                <th className="px-6 py-4 font-medium">Client Info</th>
-                                <th className="px-6 py-4 font-medium hidden md:table-cell">Rating</th>
-                                <th className="px-6 py-4 font-medium hidden lg:table-cell">Review Snippet</th>
-                                <th className="px-6 py-4 font-medium text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-neutral-800">
-                            {testimonials.map((t) => (
-                                <tr key={t.id} className="hover:bg-white/5 transition-colors">
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 rounded-full bg-neutral-800 flex items-center justify-center flex-shrink-0">
-                                                <UserCircle2 className="w-6 h-6 text-gray-500" />
-                                            </div>
-                                            <div className="min-w-0">
-                                                <p className="font-semibold text-white truncate">{t.name}</p>
-                                                <p className="text-xs text-gray-400 truncate">{t.role || 'Client'}</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 hidden md:table-cell">
-                                        <div className="flex items-center gap-1">
-                                            {Array.from({ length: 5 }).map((_, i) => (
-                                                <Star key={i} className={`w-4 h-4 ${i < (t.rating || 5) ? 'text-yellow-500 fill-yellow-500' : 'text-neutral-700'}`} />
-                                            ))}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 hidden lg:table-cell text-gray-400 text-sm italic max-w-xs truncate">
-                                        "{t.content}"
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <form action={deleteTestimonial}>
-                                            <input type="hidden" name="id" value={t.id} />
-                                            <button type="submit" title="Delete Testimonial" className="p-2 text-gray-400 hover:text-red-500 transition-colors">
-                                                <Trash2 className="w-4 h-4" />
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                ) : (
-                    <div className="p-12 text-center text-gray-500 flex flex-col items-center">
-                        <MessageSquareQuote className="w-12 h-12 mb-4 opacity-20" />
-                        <p>No testimonials found. Add your first client review to display on the site.</p>
+            {testimonials && testimonials.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {testimonials.map((t) => (
+                        <div
+                            key={t.id}
+                            className="group relative bg-white/[0.02] border border-white/[0.05] rounded-2xl p-6 hover:border-white/[0.09] transition-all"
+                        >
+                            <form
+                                action={deleteTestimonial}
+                                className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                                <input type="hidden" name="id" value={t.id} />
+                                <button
+                                    type="submit"
+                                    title="Delete"
+                                    className="p-1.5 text-white/20 hover:text-red-400 hover:bg-red-500/[0.08] rounded-lg transition-all"
+                                >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                            </form>
+
+                            <div className="flex gap-0.5 mb-4">
+                                {Array.from({ length: 5 }).map((_, i) => (
+                                    <Star
+                                        key={i}
+                                        className={`w-3.5 h-3.5 ${
+                                            i < (t.rating || 5)
+                                                ? "text-amber-400 fill-amber-400"
+                                                : "text-white/[0.08]"
+                                        }`}
+                                    />
+                                ))}
+                            </div>
+
+                            <p className="text-white/50 text-sm leading-relaxed italic mb-5 line-clamp-3">
+                                &ldquo;{t.content}&rdquo;
+                            </p>
+
+                            <div className="flex items-center gap-3 pt-4 border-t border-white/[0.05]">
+                                <div className="w-8 h-8 rounded-full bg-white/[0.05] border border-white/[0.08] flex items-center justify-center flex-shrink-0">
+                                    <UserCircle2 className="w-4 h-4 text-white/25" />
+                                </div>
+                                <div className="min-w-0">
+                                    <p className="text-sm font-semibold text-white/80 truncate">{t.name}</p>
+                                    <p className="text-[10px] text-white/30 truncate">{t.role || "Client"}</p>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <div className="flex flex-col items-center justify-center py-28 border border-white/[0.04] rounded-2xl text-center">
+                    <div className="w-16 h-16 rounded-2xl bg-white/[0.03] border border-white/[0.05] flex items-center justify-center mb-4">
+                        <MessageSquareQuote className="w-7 h-7 text-white/15" />
                     </div>
-                )}
-            </div>
+                    <p className="text-white/35 text-sm mb-1">No testimonials yet</p>
+                    <p className="text-white/20 text-xs mb-7">
+                        Add client reviews to build credibility on your site
+                    </p>
+                    <Link
+                        href="/admin/testimonials/new"
+                        className="flex items-center gap-2 bg-white text-black px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-white/90 transition-colors"
+                    >
+                        <Plus className="w-4 h-4" />
+                        Add First Review
+                    </Link>
+                </div>
+            )}
         </div>
     );
 }

@@ -40,7 +40,7 @@ export default function AboutPage() {
                     </h2>
 
                     <p className="text-gray-400 leading-relaxed text-lg font-light">
-                        With years of experience blending technical precision with artistic intuition, every project is approached not just as a job, but as an opportunity to craft a cinematic masterpiece. From freezing split-second moments in time to sweeping aerial vistas, my goal is to elevate your story above the noise.
+                        A Lagos-born visual storyteller, Seun approaches every project not just as a job, but as an opportunity to craft a cinematic masterpiece. From freezing split-second moments in time to sweeping aerial vistas, the goal is to elevate your story above the noise and put Nigerian creativity on the world stage.
                     </p>
 
                     <div

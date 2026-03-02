@@ -182,7 +182,7 @@ export default function Home() {
 
           <div className="manifesto-text mt-16 max-w-md">
             <p className="text-lg text-gray-400 font-light leading-relaxed">
-              Based in Los Angeles, specializing in cutting-edge commercial campaigns, evocative documentaries, and precision drone cinematography. With a decade of experience operating high-end cinema systems, my intent lies in pushing the boundaries of what's visually possible while remaining fiercely dedicated to the core emotion of your project.
+              Based in Lagos, Nigeria, specializing in cutting-edge commercial campaigns, evocative documentaries, and precision drone cinematography. With years of experience operating high-end cinema systems, Seun's intent lies in pushing the boundaries of what's visually possible while remaining fiercely dedicated to the core emotion of your project.
             </p>
           </div>
         </div>
@@ -340,7 +340,7 @@ export default function Home() {
 
         <footer className="relative z-10 w-full max-w-7xl mx-auto px-8 flex flex-col md:flex-row items-center justify-between gap-8 pt-16 border-t border-white/10 mt-16">
           <div className="flex items-center gap-4">
-            <span className="text-xl font-bold tracking-tighter uppercase border border-white p-2">Techboy</span>
+            <img src="/logo.svg" alt="Techboy" className="h-8 w-auto" />
             <p className="text-xs text-gray-500 uppercase tracking-widest font-medium">© {new Date().getFullYear()} All Rights Reserved.</p>
           </div>
 

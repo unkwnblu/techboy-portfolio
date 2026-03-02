@@ -5,11 +5,11 @@ import { ArrowLeft, Save } from "lucide-react";
 import Link from "next/link";
 
 export default async function EditProjectPage({
-    params
+    params,
 }: {
-    params: Promise<{ category: string, id: string }>
+    params: Promise<{ category: string; id: string }>;
 }) {
-    const { id } = await params;
+    const { id, category } = await params;
     const supabase = await createClient();
 
     const { data: project } = await supabase
@@ -19,88 +19,108 @@ export default async function EditProjectPage({
         .single();
 
     if (!project) {
-        redirect("/admin/media");
+        redirect("/admin/dashboard");
     }
 
     return (
-        <div className="max-w-3xl mx-auto space-y-8">
+        <div className="max-w-2xl space-y-6">
+            {/* Header */}
             <div className="flex items-center gap-4">
-                <Link href={`/admin/${(await params).category}`} className="p-2 bg-neutral-900 rounded-full hover:bg-neutral-800 transition-colors">
-                    <ArrowLeft className="w-5 h-5 text-gray-400 hover:text-white" />
+                <Link
+                    href={`/admin/${category}`}
+                    className="p-2 rounded-xl bg-white/[0.04] border border-white/[0.06] hover:bg-white/[0.07] transition-colors text-white/50 hover:text-white"
+                >
+                    <ArrowLeft className="w-4 h-4" />
                 </Link>
                 <div>
-                    <h1 className="text-3xl font-bold uppercase tracking-widest mb-2">Edit Project</h1>
-                    <p className="text-gray-400">Update project metadata and featured status.</p>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/25 mb-0.5">
+                        Edit Project
+                    </p>
+                    <h1 className="text-xl font-bold tracking-tight truncate">{project.title}</h1>
                 </div>
             </div>
 
-            <form action={updateProject} className="bg-neutral-900 border border-neutral-800 rounded-2xl p-8 space-y-6">
+            <form action={updateProject} className="space-y-4">
                 <input type="hidden" name="id" value={project.id} />
                 <input type="hidden" name="category" value={project.category} />
 
-                <div className="space-y-4">
+                <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl p-6 space-y-5">
+                    <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30">
+                        Project Details
+                    </h2>
+
                     <div>
-                        <label className="block text-sm font-medium text-gray-400 mb-2">Title</label>
+                        <label className="block text-[10px] font-bold text-white/30 uppercase tracking-[0.18em] mb-2">
+                            Title <span className="text-red-400/80">*</span>
+                        </label>
                         <input
                             type="text"
                             name="title"
                             defaultValue={project.title}
                             required
-                            className="w-full bg-black border border-neutral-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gray-500 transition-colors"
+                            className="w-full bg-black/40 border border-white/[0.08] rounded-xl py-3 px-4 text-white text-sm focus:outline-none focus:border-white/25 transition-colors"
                         />
                     </div>
-                </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-[10px] font-bold text-white/30 uppercase tracking-[0.18em] mb-2">
+                                Client{" "}
+                                <span className="text-white/20 normal-case tracking-normal text-[9px]">
+                                    (optional)
+                                </span>
+                            </label>
+                            <input
+                                type="text"
+                                name="client"
+                                defaultValue={project.client || ""}
+                                className="w-full bg-black/40 border border-white/[0.08] rounded-xl py-3 px-4 text-white text-sm focus:outline-none focus:border-white/25 transition-colors"
+                                placeholder="Client name"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-[10px] font-bold text-white/30 uppercase tracking-[0.18em] mb-2">
+                                Category
+                            </label>
+                            <div className="w-full bg-white/[0.02] border border-white/[0.05] rounded-xl py-3 px-4 text-white/30 text-sm font-semibold uppercase tracking-wider cursor-not-allowed">
+                                {project.category}
+                            </div>
+                        </div>
+                    </div>
+
                     <div>
-                        <label className="block text-sm font-medium text-gray-400 mb-2">Client</label>
-                        <input
-                            type="text"
-                            name="client"
-                            defaultValue={project.client || ''}
-                            className="w-full bg-black border border-neutral-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gray-500 transition-colors"
+                        <label className="block text-[10px] font-bold text-white/30 uppercase tracking-[0.18em] mb-2">
+                            Description
+                        </label>
+                        <textarea
+                            name="description"
+                            defaultValue={project.description || ""}
+                            rows={4}
+                            className="w-full bg-black/40 border border-white/[0.08] rounded-xl py-3 px-4 text-white text-sm focus:outline-none focus:border-white/25 transition-colors resize-none"
+                            placeholder="Project description…"
                         />
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-400 mb-2">Category (Locked)</label>
+
+                    <label className="flex items-center gap-3 cursor-pointer select-none group bg-white/[0.02] border border-white/[0.05] rounded-xl px-4 py-3">
                         <input
-                            type="text"
-                            disabled
-                            value={project.category.toUpperCase()}
-                            className="w-full bg-black/50 text-gray-500 border border-neutral-800 rounded-lg px-4 py-3 cursor-not-allowed focus:outline-none transition-colors"
+                            type="checkbox"
+                            name="is_featured"
+                            id="is_featured"
+                            defaultChecked={project.is_featured ?? false}
+                            className="w-4 h-4 rounded bg-black/50 border-white/20 accent-white cursor-pointer"
                         />
-                    </div>
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-gray-400 mb-2">Description</label>
-                    <textarea
-                        name="description"
-                        defaultValue={project.description || ''}
-                        rows={4}
-                        className="w-full bg-black border border-neutral-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gray-500 transition-colors resize-none"
-                    />
-                </div>
-
-                <div className="flex items-center gap-3 bg-black/50 p-4 rounded-lg border border-neutral-800">
-                    <input
-                        type="checkbox"
-                        name="is_featured"
-                        id="is_featured"
-                        defaultChecked={project.is_featured ?? false}
-                        className="w-5 h-5 rounded border-gray-800 bg-black text-white focus:ring-0 focus:ring-offset-0 cursor-pointer accent-white"
-                    />
-                    <label htmlFor="is_featured" className="text-sm font-medium text-gray-300 cursor-pointer">
-                        Feature on Homepage Bento Grid
+                        <span className="text-[12px] text-white/50 group-hover:text-white/80 transition-colors cursor-pointer">
+                            Feature on homepage bento grid
+                        </span>
                     </label>
                 </div>
 
-                <div className="pt-4 border-t border-neutral-800 flex justify-end">
+                <div className="flex items-center justify-end pt-1">
                     <button
                         type="submit"
-                        className="flex items-center gap-2 bg-white text-black px-8 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors uppercase tracking-widest text-sm"
+                        className="flex items-center gap-2 bg-white text-black px-6 py-2.5 rounded-xl font-bold text-[12px] uppercase tracking-wider hover:bg-white/90 transition-colors"
                     >
-                        <Save className="w-4 h-4" />
+                        <Save className="w-3.5 h-3.5" />
                         Save Changes
                     </button>
                 </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Camera, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 
@@ -50,9 +50,12 @@ export default function Navbar() {
                     } ${!scrolled && !mobileMenuOpen ? "mix-blend-difference" : ""} text-white`}
             >
                 <div className="flex items-center justify-between px-8 max-w-7xl mx-auto relative z-[60]">
-                    <Link href="/" className="flex items-center gap-2 group border-none" onClick={() => setMobileMenuOpen(false)}>
-                        <Camera className="w-6 h-6 transition-transform group-hover:rotate-12" />
-                        <span className="text-xl font-bold tracking-tighter uppercase">Techboy</span>
+                    <Link href="/" className="flex items-center group" onClick={() => setMobileMenuOpen(false)}>
+                        <img
+                            src="/logo.svg"
+                            alt="Techboy"
+                            className="h-8 w-auto transition-opacity group-hover:opacity-80"
+                        />
                     </Link>
 
                     {/* Desktop Nav */}
@@ -79,6 +82,11 @@ export default function Navbar() {
                 className={`fixed top-0 left-0 w-screen h-[100dvh] bg-black z-40 flex flex-col items-center justify-center transition-all duration-500 md:hidden ${mobileMenuOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"
                     }`}
             >
+                {/* Logo in mobile menu */}
+                <div className="absolute top-6 left-8">
+                    <img src="/logo.svg" alt="Techboy" className="h-8 w-auto" />
+                </div>
+
                 <div className="flex flex-col items-center gap-8 text-2xl font-bold uppercase tracking-widest mt-16">
                     {navLinks.map((link, index) => (
                         <Link
